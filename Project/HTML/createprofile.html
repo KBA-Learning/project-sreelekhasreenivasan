@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get Your Book - Create Profile</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .bg-image::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: url('/Images/BOOKSAF-11.png') no-repeat center center;
+            background-size: cover;
+            opacity: 0.6;
+            z-index: -1; 
+        }
+        .bg-image::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.5); 
+            z-index: -1; 
+        }
+    </style>
+
+</head>
+<body class="relative h-full flex justify-center items-center bg-image">
+    <a href="home.html" class="absolute top-4 right-4 bg-red-300 text-white p-3 rounded-full shadow-lg hover:bg-red-400 transition-transform transform hover:scale-110 duration-300 ease-in-out">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+    </a>
+    <div class="relative bg-white bg-opacity-90 backdrop-filter p-10 rounded-lg shadow-2xl w-3/5 text-center z-10 mt-20 mb-20">
+        <div class="flex items-center ml-60 mb-6">
+            <img src="/Images/istockphoto-1160558157-612x612-removebg-preview.png" alt="Get Your Book" class="w-15 h-12 mr-2">
+            <h7 class="font-semibold">Get Your Book</h7>
+        </div>
+        <form>
+            <h2 class="text-2xl font-semibold mb-6 pl-0 text-indigo-500">Create Your Profile</h2>
+
+            <div class="mb-4">
+                <input type="text" placeholder="Full Name" class="w-full p-3 bg-red-50 shadow-md border-zinc-800 focus:outline-none focus:ring-1" required>
+            </div>
+
+            <div class="mb-4">
+                <input type="text" placeholder="Username" class="w-full p-3 bg-red-50 shadow-md border-zinc-800 focus:outline-none focus:ring-1" required>
+            </div>
+
+            <div class="mb-4">
+                <input type="text" placeholder="Email Address" class="w-full p-3 bg-red-50 shadow-md border-zinc-800 focus:outline-none focus:ring-1" required>
+            </div>
+
+            <div class="mb-4">
+                <input type="password" placeholder="Password" class="w-full p-3 bg-red-50 shadow-md border-zinc-800 focus:outline-none focus:ring-1" required>
+            </div>
+
+            <div class="mb-4">
+                <input type="password" placeholder="Confirm Password" class="w-full p-3 bg-red-50 shadow-md border-zinc-800 focus:outline-none focus:ring-1" required>
+            </div>
+
+            <button type="submit" class="bg-red-600 text-white w-full h-10 py-2 rounded-lg shadow-lg hover:bg-red-700 transition mb-4"><a href="search.html">Create Profile</a></button>
+        </form>
+
+        <div class="mt-6 text-sm">
+            <p>Already have a profile? <a href="sign.html" class="text-red-400 hover:underline">Sign in here</a></p>
+        </div>
+    </div>
+</body>
+</html>

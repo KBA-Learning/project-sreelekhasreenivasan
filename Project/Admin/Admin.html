@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 h-full">
+  <div class="h-full flex flex-col lg:flex-row">
+    <div class="bg-purple-800 w-full lg:w-1/4 p-4 text-white min-h-screen flex flex-col justify-between">
+      <div class="space-y-4">
+        <div class="text-center text-3xl font-bold mb-6">
+          Dashboard
+        </div>
+        <nav class="space-y-4">
+          <a href="Admin.html" class="block p-3 rounded bg-purple-700 hover:bg-purple-600 text-center">Users</a>
+          <a href="books.html" class="block p-3 rounded bg-purple-700 hover:bg-purple-600 text-center">Books</a>
+          <a href="review.html"
+            class="block p-3 rounded bg-purple-700 hover:bg-purple-600 text-center">Ratings</a>
+            <a href="comment.html"
+            class="block p-3 rounded bg-purple-700 hover:bg-purple-600 text-center">Reviews</a>
+          <a href="settings.html" class="block p-3 rounded bg-purple-700 hover:bg-purple-600 text-center">Settings</a>
+        </nav>
+      </div>
+      <div class="text-center p-4 text-gray-400">
+        Admin Panel © 2024
+      </div>
+    </div>
+    <div class="flex-1 p-6 space-y-6 bg-gray-50">
+      <div class="flex flex-col lg:flex-row justify-between items-center space-y-4 lg:space-y-0">
+        <h1 class="text-4xl font-bold text-gray-700">User List</h1>
+        <div class="text-lg">
+          <span class="text-gray-600">Logged-in Users: </span>
+          <span class="text-green-500 font-bold">20</span>
+        </div>
+      </div>
+      <div class="bg-white p-6 rounded-lg shadow-md overflow-auto">
+        <table class="min-w-full table-auto text-center">
+          <thead class="border-b-2">
+            <tr>
+              <th class="py-3 px-4">Username</th>
+              <th class="py-3 px-4">Role</th>
+              <th class="py-3 px-4">Status</th>
+              <th class="py-3 px-4">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b hover:bg-gray-100 transition-colors">
+              <td class="py-3 px-4"><a href="user.html" class="text-purple-800 font-bold">user1</a></td>
+              <td class="py-3 px-4">User</td>
+              <td class="py-3 px-4 text-green-500">Online</td>
+              <td class="py-3 px-4 flex justify-center space-x-4">
+                <button class="bg-red-700 text-white px-3 py-1 rounded">&nbsp;&nbsp;Delete&nbsp;&nbsp;</button>
+              </td>
+            </tr>
+            <tr class="border-b hover:bg-gray-100 transition-colors">
+              <td class="py-3 px-4"><a href="user.html" class="text-purple-800 font-bold">user3</a></td>
+              <td class="py-3 px-4">User</td>
+              <td class="py-3 px-4 text-green-500">Online</td>
+              <td class="py-3 px-4 flex justify-center space-x-4">
+                <button class="bg-red-700 text-white px-3 py-1 rounded">&nbsp;&nbsp;Delete&nbsp;&nbsp;</button>
+              </td>
+            </tr>
+            <tr class="border-b hover:bg-gray-100 transition-colors">
+              <td class="py-3 px-4"><a href="user.html" class="text-purple-800 font-bold">user4</a></td>
+              <td class="py-3 px-4">User</td>
+              <td class="py-3 px-4 text-green-500">Online</td>
+              <td class="py-3 px-4 flex justify-center space-x-4">
+                <button class="bg-red-700 text-white px-3 py-1 rounded">&nbsp;&nbsp;Delete&nbsp;&nbsp;</button>
+              </td>
+            </tr>
+            <tr class="border-b hover:bg-gray-100 transition-colors">
+              <td class="py-3 px-4"><a href="user.html" class="text-purple-800 font-bold">user5</a></td>
+              <td class="py-3 px-4">User</td>
+              <td class="py-3 px-4 text-gray-500">Offline</td>
+              <td class="py-3 px-4 flex justify-center space-x-4">
+                <button class="bg-red-700 text-white px-3 py-1 rounded">&nbsp;&nbsp;Delete&nbsp;&nbsp;</button>
+              </td>
+            </tr>
+            <tr class="border-b hover:bg-gray-100 transition-colors">
+              <td class="py-3 px-4"><a href="user.html" class="text-purple-800 font-bold">user6</a></td>
+              <td class="py-3 px-4">User</td>
+              <td class="py-3 px-4 text-gray-500">Offline</td>
+              <td class="py-3 px-4 flex justify-center space-x-4">
+                <button class="bg-red-700 text-white px-3 py-1 rounded">&nbsp;&nbsp;Delete&nbsp;&nbsp;</button>
+              </td>
+            </tr>
+            <tr class="border-b hover:bg-gray-100 transition-colors">
+              <td class="py-3 px-4"><a href="user.html" class="text-purple-800 font-bold">user7</a></td>
+              <td class="py-3 px-4">User</td>
+              <td class="py-3 px-4 text-gray-500">Offline</td>
+              <td class="py-3 px-4 flex justify-center space-x-4">
+                <button class="bg-red-700 text-white px-3 py-1 rounded">&nbsp;&nbsp;Delete&nbsp;&nbsp;</button>
+              </td>
+            </tr>
+            <tr class="border-b hover:bg-gray-100 transition-colors">
+              <td class="py-3 px-4"><a href="user.html" class="text-purple-800 font-bold">user8</a></td>
+              <td class="py-3 px-4">User</td>
+              <td class="py-3 px-4 text-green-500">Online</td>
+              <td class="py-3 px-4 flex justify-center space-x-4">
+                <button class="bg-red-700 text-white px-3 py-1 rounded">&nbsp;&nbsp;Delete&nbsp;&nbsp;</button>
+              </td>
+            </tr>
+            <tr class="border-b hover:bg-gray-100 transition-colors">
+              <td class="py-3 px-4"><a href="user.html" class="text-purple-800 font-bold">user9</a></td>
+              <td class="py-3 px-4">User</td>
+              <td class="py-3 px-4 text-green-500">Online</td>
+              <td class="py-3 px-4 flex justify-center space-x-4">
+                <button class="bg-red-700 text-white px-3 py-1 rounded">&nbsp;&nbsp;Delete&nbsp;&nbsp;</button>
+              </td>
+            <tr class="border-b hover:bg-gray-100 transition-colors">
+              <td class="py-3 px-4"><a href="user.html" class="text-purple-800 font-bold">user10</a></td>
+              <td class="py-3 px-4">User</td>
+              <td class="py-3 px-4 text-green-500">Online</td>
+              <td class="py-3 px-4 flex justify-center space-x-4">
+                <button class="bg-red-700 text-white px-3 py-1 rounded">&nbsp;&nbsp;Delete&nbsp;&nbsp;</button>
+              </td>
+            </tr>
+            <tr class="border-b hover:bg-gray-100 transition-colors">
+              <td class="py-3 px-4"><a href="user.html" class="text-purple-800 font-bold">user11</a></td>
+              <td class="py-3 px-4">User</td>
+              <td class="py-3 px-4 text-green-500">Online</td>
+              <td class="py-3 px-4 flex justify-center space-x-4">
+                <button class="bg-red-700 text-white px-3 py-1 rounded">&nbsp;&nbsp;Delete&nbsp;&nbsp;</button>
+              </td>
+            <tr class="border-b hover:bg-gray-100 transition-colors">
+              <td class="py-3 px-4"><a href="user.html" class="text-purple-800 font-bold">user12</a></td>
+              <td class="py-3 px-4">User</td>
+              <td class="py-3 px-4 text-green-500">Online</td>
+              <td class="py-3 px-4 flex justify-center space-x-4">
+                <button class="bg-red-700 text-white px-3 py-1 rounded">&nbsp;&nbsp;Delete&nbsp;&nbsp;</button>
+              </td>
+            </tr>
+            <tr class="border-b hover:bg-gray-100 transition-colors">
+              <td class="py-3 px-4"><a href="user.html" class="text-purple-800 font-bold">user13</a></td>
+              <td class="py-3 px-4">User</td>
+              <td class="py-3 px-4 text-green-500">Online</td>
+              <td class="py-3 px-4 flex justify-center space-x-4">
+                <button class="bg-red-700 text-white px-3 py-1 rounded">&nbsp;&nbsp;Delete&nbsp;&nbsp;</button>
+              </td>
+            <tr class="border-b hover:bg-gray-100 transition-colors">
+              <td class="py-3 px-4"><a href="user.html" class="text-purple-800 font-bold">user14</a></td>
+              <td class="py-3 px-4">User</td>
+              <td class="py-3 px-4 text-green-500">Online</td>
+              <td class="py-3 px-4 flex justify-center space-x-4">
+                <button class="bg-red-700 text-white px-3 py-1 rounded">&nbsp;&nbsp;Delete&nbsp;&nbsp;</button>
+              </td>
+            </tr>
+            <tr class="border-b hover:bg-gray-100 transition-colors">
+              <td class="py-3 px-4"><a href="user.html" class="text-purple-800 font-bold">user15</a></td>
+              <td class="py-3 px-4">User</td>
+              <td class="py-3 px-4 text-green-500">Online</td>
+              <td class="py-3 px-4 flex justify-center space-x-4">
+                <button class="bg-red-700 text-white px-3 py-1 rounded">&nbsp;&nbsp;Delete&nbsp;&nbsp;</button>
+              </td>
+
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+
+</body>
+
+</html>

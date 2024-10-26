@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Review & Comment Details</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 h-full">
+  <div class="min-h-screen flex flex-col lg:flex-row">
+    <div class="flex-1 p-6 space-y-6 bg-gray-50 overflow-auto">
+      <a style="float: right;" class="mt-0 mr-16 text-green-800 mb-4 hover:underline" href="review.html">Back to Reviews</a>
+      <div class="bg-white p-6 rounded-lg shadow-md">
+        <h2 class="text-2xl font-bold mb-4">Book Information</h2>
+        <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center space-y-4 lg:space-y-0">
+          <div>
+            <p><strong>Title:</strong> <span class="text-purple-800">The Book Title</span></p>
+            <p><strong>Author:</strong> Author Name</p>
+            <p><strong>Average Rating:</strong> 4.8</p>
+          </div>
+          <div class="bg-purple-700 text-white px-4 py-2 rounded">Total Reviews: 150</div>
+        </div>
+      </div>
+      <div class="bg-white p-6 rounded-lg shadow-md">
+        <h2 class="text-2xl font-bold mb-4">User Reviews</h2>
+        <table class="min-w-full table-auto text-center">
+          <thead class="border-b-2">
+            <tr>
+              <th class="py-3 px-4">Reviewer</th>
+              <th class="py-3 px-4">Ratings</th>
+              <th class="py-3 px-4">Reviews</th>
+              <th class="py-3 px-4">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b hover:bg-gray-100 transition-colors">
+              <td class="py-3 px-4 font-bold">User 1</td>
+              <td class="py-3 px-4 text-green-500">5.0</td>
+              <td class="py-3 px-4">Amazing book! Highly recommend.</td>
+              <td class="py-3 px-4 flex justify-center space-x-4">
+                <button class="bg-red-700 text-white px-3 py-1 rounded">Delete</button>
+              </td>
+            </tr>
+            <tr class="border-b hover:bg-gray-100 transition-colors">
+              <td class="py-3 px-4 font-bold">User 2</td>
+              <td class="py-3 px-4 text-green-500">4.5</td>
+              <td class="py-3 px-4">Great read, but a bit long.</td>
+              <td class="py-3 px-4 flex justify-center space-x-4">
+                <button class="bg-red-700 text-white px-3 py-1 rounded">Delete</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</body>
+
+</html>

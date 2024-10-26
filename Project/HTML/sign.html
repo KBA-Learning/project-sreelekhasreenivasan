@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get Your Book - Sign In</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+           nav {
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 10;
+            transition: background-color 0.3s ease;
+        }
+
+        .navbar {
+            background-color: transparent;
+            color: rgb(240, 202, 35);
+        }
+        .bg-image::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: url('/Images/BOOKSAF-11.png') no-repeat center center;
+            background-size: cover;
+            opacity: 0.6;
+            z-index: -1; 
+        }
+         .bg-image::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: -1;
+        }
+        .google-logo {
+            width: 20px;
+            height: 20px;
+        }
+    </style>
+
+</head>
+<body class="relative h-screen flex justify-center items-center bg-image">
+    <nav id="navbar" class="navbar fixed top-0 left-0 w-full z-10 p-4">
+        <div class="flex space-x-4" style="float: right;">
+            <a href="home.html" class="pr-4 hover:text-yellow-100 hover:underline">Home</a>
+        </div>
+    </nav>
+    <div class="relative bg-white bg-opacity-90 backdrop-filter  p-10 rounded-lg shadow-2xl w-96 text-center z-10 transform transition hover:scale-105 duration-300 ease-in-out">
+        <div class="flex items-center ml-10 mb-6">
+            <img src="/Images/istockphoto-1160558157-612x612-removebg-preview.png" alt="Get Your Book" class="w-15 h-12 mr-2">
+            <h7 class="font-semibold">Get Your Book</h7>
+        </div>
+        <form>
+            <h2 class="text-2xl font-semibold mb-6 pl-0 text-indigo-500">Sign In</h2>
+            <div class="mb-4">
+                <input type="text" placeholder="Username or Email Address" class="w-full p-3 bg-red-50 shadow-md border-zinc-800   focus:outline-none focus:ring-1" required>
+            </div>
+            <div class="mb-4">
+                <input type="text" placeholder="Password" class="w-full p-3 bg-red-50 shadow-md border-zinc-800   focus:outline-none focus:ring-1" required>
+            </div>
+            
+            <button type="submit" class="bg-red-600 text-white w-full h-10 py-2 rounded-lg shadow-lg hover:bg-red-700 transition mb-4"><a href="search.html">Next</a></button>
+            
+            <p class="text-gray-500 mb-4">Or</p>
+            
+            <button type="button" class="flex items-center justify-center bg-red-300 text-white w-full h-10 py-2 rounded-lg shadow-lg hover:bg-red-400 transition">
+                <img src="/Images/download-removebg-preview.png" alt="Google Logo" class="google-logo mr-2">
+                <span>Sign in with Google</span>
+            </button>
+        </form>
+        
+        <div class="mt-6 text-sm">
+            <a href="forgotpassword.html" class="text-red-400 hover:underline">Forgot password?</a>
+            <p class="mt-2">Don't have an account? <a href="sign Up.html" class="text-red-400 hover:underline">Sign up here</a></p>
+        </div>
+    </div>
+    
+
+</body>
+</html>
