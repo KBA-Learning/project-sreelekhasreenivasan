@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import Navebar from "../component/Navebar";
 
 const Updatebook = () => {
+
   const { id } = useParams();
   const [book, setBook] = useState({
     bookName: "",
@@ -12,7 +13,7 @@ const Updatebook = () => {
     description: "",
     imageUrl: ""
   });
-  const [error, setError] = useState(null);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -59,7 +60,9 @@ const Updatebook = () => {
 
       const updatedBook = await response.json();
       console.log(updatedBook);
+
       navigate('/view-book'); // Redirect to the book view page after updating
+
     } catch (error) {
       console.error("Error updating book:", error);
       setError("Failed to update the book.");
@@ -69,11 +72,15 @@ const Updatebook = () => {
   return (
     <>
     <Navebar/>
+
     <div className="max-w-lg mx-auto p-4">
+      
       <h1 className="text-2xl font-bold mb-4">Update Book</h1>
 
         <form onSubmit={handleSubmit}>
+
           <div className="mb-4">
+
             <label htmlFor="bookName" className="block text-sm font-medium text-gray-700">
               Book Name
             </label>

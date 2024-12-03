@@ -1,6 +1,7 @@
 import React from 'react'
 import {Link, useNavigate} from 'react-router-dom'
 import logo from '../Images/logo.png'
+import getUserType from '../utils/auth'
 
 const Navebar = () => {
 
@@ -35,7 +36,7 @@ const Navebar = () => {
         </div>
         <ul className='flex  gap-6 mt-4 justify-center w-full'>
           <li className='hover:text-indigo-500'><Link to={'/view-book'}>Library</Link></li>
-          <li className='hover:text-indigo-500'><Link to={'/add-review'}>Rate & Review</Link></li>
+          <li className='hover:text-indigo-500'><Link to={'/search-book'}>Search Book</Link></li>
           <li className='hover:text-indigo-500'><Link to={'/add-book'}>Add Book</Link></li>
           <button onClick={handleLogout} className="bg-transparent border-none cursor-pointer">
               Logout

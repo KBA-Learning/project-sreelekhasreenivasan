@@ -3,38 +3,50 @@ import { useNavigate } from "react-router-dom";
 import Navebar from "../component/Navebar"; 
 
 const Search = () => {
+
   const [bookTitle, setBookTitle] = useState("");
   const [author, setAuthor] = useState("");
-  const [genre, setGenre] = useState("All Genres");
-  const [publicationYear, setPublicationYear] = useState("");
-  
+ 
   const navigate = useNavigate(); 
 
   const handleSearch = async (e) => {
     e.preventDefault();
-
+  
+    // Check if at least one field is filled
+    if (!bookTitle && !author && genre === "All Genres" && !publicationYear) {
+      alert("Please fill at least one field to perform the search.");
+      return;
+    }
+  
     try {
-      const response = await fetch('http://localhost:3000/books/search', {
+      const response = await fetch('http://127.0.0.1:3000/books/search', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ bookTitle, author, genre, publicationYear }),
+        body: JSON.stringify({ bookTitle, author }),
       });
   
       const data = await response.json();
   
-      if (Array.isArray(data) && data.length > 0) {
-        navigate(`/one-book/${data[0]._id}`, {
-          state: data[0],
-        });
+      if (Array.isArray(data)) {
+        if (data.length === 1) {
+          // If exactly one book is found, redirect to the Onebook page
+          navigate(`/one-book/${data[0]._id}`);
+        } else if (data.length > 1) {
+          // If multiple books are found, redirect to a list page
+          navigate('/view-book', { state: { books: data } });
+        } else {
+          alert('No books found.');
+        }
       } else {
-        alert('No books found');
+        alert('Unexpected response from server.');
       }
     } catch (error) {
       console.error('Error fetching books:', error);
     }
   };
+  
 
   return (
     <div className="bg-gray-100">
@@ -67,32 +79,8 @@ const Search = () => {
               />
             </div>
 
-            <div className="mb-4">
-              <label className="block font-bold text-gray-700">Genre:</label>
-              <select
-                value={genre}
-                onChange={(e) => setGenre(e.target.value)}
-                className="w-full border border-blue-300 rounded-lg p-2 focus:outline-none focus:border-blue-500"
-              >
-                <option>All Genres</option>
-                <option>Fiction</option>
-                <option>Non-fiction</option>
-                <option>Romance</option>
-                <option>Fantasy</option>
-                <option>Action</option>
-                <option>Thriller</option>
-              </select>
-            </div>
+          
 
-            <div className="mb-4">
-              <label className="block font-bold text-gray-700">Publication Year:</label>
-              <input
-                type="date"
-                value={publicationYear}
-                onChange={(e) => setPublicationYear(e.target.value)}
-                className="w-full border border-blue-300 rounded-lg p-2 focus:outline-none focus:border-blue-500"
-              />
-            </div>
 
             <div className="flex justify-center mt-10 mb-4">
               <button type="submit" className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700">
