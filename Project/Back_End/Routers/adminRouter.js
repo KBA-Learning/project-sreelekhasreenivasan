@@ -7,7 +7,7 @@ import { fileURLToPath } from "url";
 import express from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { verifyToken } from "../Middle-Ware/Auth.js";
+import {authenticate} from '../Middle-Ware/Auth.js'
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -30,7 +30,13 @@ const storage = multer.diskStorage({
   },
 });
 
-const upload = multer({ storage }); //multer middleware
+
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 10 * 1024 * 1024, // Set the file size limit to 10MB (adjust as needed)
+  },
+});
 
 const userSchema = new mongoose.Schema({
   fullName: String,
@@ -40,13 +46,12 @@ const userSchema = new mongoose.Schema({
   role: { type: String, enum: ["ADMIN", "USER"], default: "USER" },
 });
 
-const reviewSchema= new mongoose.Schema({
-
-  bookName:{type:String, required:true},
+const reviewSchema = new mongoose.Schema({
   rating: { type: Number, required: true, min: 1, max: 5 },
   review: { type: String, required: true },
-  user: { type: mongoose.Schema.Types.ObjectId,required: true,ref: 'User'}
-})
+  bookId: { type: mongoose.Schema.Types.ObjectId, ref: "Book", required: true },
+  // userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+});
 
 const bookSchema = new mongoose.Schema({
 
@@ -63,7 +68,6 @@ const bookSchema = new mongoose.Schema({
 });
 
 
-
 const User = mongoose.model("User_Profiles", userSchema);
 const Books = mongoose.model("Book_Details", bookSchema);
 const Review=mongoose.model("Reviews",reviewSchema);
@@ -75,16 +79,23 @@ adminRouter.get("/", (req, res) => {
 
 adminRouter.post("/signup", async (req, res) => {
   try {
-    const { Fullname, Emailaddress, Password, Mobilenumber } = req.body;
-    // console.log(Fullname, Emailaddress, Password, Mobilenumber);
 
-    // if (!Fullname || !Emailaddress || !Password || !Mobilenumber) {
-    //     return res.status(400).json({
-    //         message: "Provide the required details",
-    //         error: true,
-    //         success: false,
-    //     });
-    // }
+    const found = await User.findOne({ role: 'ADMIN' });
+    let role = 'USER';
+
+    if (!found) {
+        role = 'ADMIN'
+    }
+    
+    const { Fullname, Emailaddress, Password, Mobilenumber } = req.body;
+
+    if (!Fullname || !Emailaddress || !Password || !Mobilenumber) {
+        return res.status(400).json({
+            message: "Provide the required details",
+            error: true,
+            success: false,
+        });
+    }
 
     const user = await User.findOne({ emailAddress: Emailaddress });
 
@@ -105,6 +116,7 @@ adminRouter.post("/signup", async (req, res) => {
       emailAddress: Emailaddress,
       password: hashedPassword,
       mobile_no: Mobilenumber,
+      role:role
     });
 
     await newUser.save();
@@ -155,74 +167,79 @@ adminRouter.post("/login", async (req, res) => {
       });
     }
 
-    const token = jwt.sign(
-      { userId: user._id, userType: user.role },process.env.SECRET_KEY,
-      {
-        expiresIn: "1h",
-      }
-    );
+        const token = jwt.sign({ userId: user._id, userType: user.role  },process.env.SECRET_KEY, { expiresIn: '7h' });
+        
+        // console.log(token);
 
-    res.cookie("Authtoken", token);
-    res.json({
-      status: true,
-      message: "login success",
-      userType: user.role,
-    });
-    return res;
+        res.cookie('bookToken', token, { httpOnly: true });
+        res.status(200).json({ message: 'Success',  userType: user.role })
+
   } catch (error) {
-    return res.status(500).json({
-      message: error.message || error,
-      error: true,
-      success: false,
+    return res.status(500).json({message: error.message || error,error: true,success: false,
     });
   }
 });
 
-//upload single file
-adminRouter.post(
-  "/addbook",
-  upload.single("file"),
-  verifyToken,
-  async (req, res) => {
-    try {
 
-      if(req.userType='ADMIN'){
-
-      const { title, author, genre, description, pubdate } = req.body;
-
-      // Check if the book already exists
-
-      const existingBook = await Books.findOne({
-        bookName: title,
-        author: author,
-      });
-      if (existingBook) {
-        return res.status(400).json({ message: "Book already exists" });
-      }
-
-      // Save new book to database
-      const newBook = new Books({
-        bookName: title,
-        author: author,
-        genre: genre,
-        description: description,
-        publishedDate: pubdate,
-        imageUrl: `/Images/${req.file.filename}`,
-      });
-
-      await newBook.save();
-
-      res
-        .status(201)
-        .json({ message: "Book added successfully", book: newBook });
-    }}
+adminRouter.get('/viewuser',authenticate, async(req,res)=>{
+  try {
+    const user = req.userType;
+    console.log(user);
     
-    catch (error) {
-      console.error("Error:", error);
-      res.status(500).json({ message: "Server Error", error });
+    res.json({ user });
+}
+catch {
+    res.status(404).json({ message: 'user not authorized' });
+}
+})
+
+//upload single file
+adminRouter.post("/addbook", upload.single("file"), async (req, res) => {
+
+  const data = req.body;
+  const { title, author, genre, description, pubdate } = data;
+
+  
+
+  try {
+   
+   
+    // Ensure a file is uploaded
+    if (!req.file) {
+      return res.status(400).json({ message: "Book image file is required" });
     }
+
+    // Check if the book already exists
+    const existingBook = await Books.findOne({
+      bookName: title,
+      author: author,
+    });
+
+    if (existingBook) {
+      return res.status(400).json({ message: "Book already exists" });
+    }
+
+    // Save new book to database
+    const newBook = new Books({
+      bookName: title,
+      author: author,
+      genre: genre,
+      description: description,
+      publishedDate: pubdate,
+      imageUrl: `/Images/${req.file.filename}`,
+    });
+
+    await newBook.save();
+
+    // Send success response
+    res.status(201).json({ message: "Book added successfully", book: newBook });
+
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Server Error", error });
   }
-);
+});
+
 
 
 // Fetch all books
@@ -301,7 +318,7 @@ adminRouter.get('/searchbook/:genre', async (req,res)=>{
 
 
 
-adminRouter.put("/updatebook/:id", verifyToken, async (req, res) => {
+adminRouter.put("/updatebook/:id", async (req, res) => {
   try {
     const ID = req.params.id;
 
@@ -339,12 +356,11 @@ adminRouter.put("/updatebook/:id", verifyToken, async (req, res) => {
 });
 
 
-adminRouter.delete("/deletebook/:id", verifyToken, async (req, res) => {
+adminRouter.delete("/deletebook/:id", async (req, res) => {
   const ID = req.params.id;
 
   try {
-    if(req.userType==='ADMIN'){
-
+   
    
     const result = await Books.deleteOne({ _id: ID });
 
@@ -353,7 +369,7 @@ adminRouter.delete("/deletebook/:id", verifyToken, async (req, res) => {
     }
 
     res.status(200).json({ message: "Book deleted" });
-  }
+  
   } catch (error) {
     console.error("Error deleting book:", error);
     res.status(500).json({ message: "Server error while deleting book" });
@@ -361,174 +377,85 @@ adminRouter.delete("/deletebook/:id", verifyToken, async (req, res) => {
 });
 
 
-adminRouter.post("/reviews/:bookId", verifyToken, async (req, res) => {
-  const { rating, review } = req.body;
-  const bookId = req.params.bookId;
-  const userId = req.userId; 
-
-  // console.log(bookId, rating, review, userId);
-
+adminRouter.post("/reviews/:bookId", async (req, res) => {
   try {
-
-    const book = await Books.findById(bookId);
-    // console.log(book);
-
-    if (!book) {
-      return res.status(404).json({ message: "Book not found" });
-    }
-
-    const existingReview = await Review.findOne({ bookName: book.bookName, user: userId });
-    console.log(existingReview);
+    const { bookId } = req.params;
+    const { rating, review } = req.body;
     
-    if (existingReview) {
-      return res.status(400).json({ message: "You have already reviewed this book." });
+
+    if (!rating || !review) {
+      return res.status(400).json({ message: "Rating and review are required." });
     }
+
 
     const newReview = new Review({
-      bookName: book.bookName,
+      bookId,
       rating,
       review,
-      user: userId,
     });
 
     await newReview.save();
-
-    book.reviews.push(newReview);
-    book.numReviews += 1;
-    book.rating = (book.rating * (book.numReviews - 1) + rating) / book.numReviews;
-    await book.save();
-
-    res.status(201).json({
-      message: "Review added successfully",
-      review: newReview,
-    });
-  } catch (error) {
-    console.error("Error adding review:", error);
-    res.status(500).json({ message: "Server Error", error: error.message });
+    res.status(201).json({ message: "Review added successfully!" });
+  } catch (err) {
+    res.status(500).json({ message: "Error adding review.", error: err.message });
   }
 });
 
 
-
-adminRouter.put("/updatereview/:bookId", verifyToken, async (req, res) => {
-  const { rating, review } = req.body;
-  const bookId = req.params.bookId;
-  const userId = req.userId;
-
+adminRouter.get("/reviews/:bookId", async (req, res) => {
   try {
-    const book = await Books.findById(bookId);
-    if (!book) {
-      return res.status(404).json({ message: "Book not found" });
-    }
+    const { bookId } = req.params;
 
-    // Find review by user for the specific book
-    const existingReview = book.reviews.find(
-      (r) => r.user.toString() === userId.toString()
+    const reviews = await Review.find({ bookId })
+
+    res.status(200).json(reviews);
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching reviews.", error: err.message });
+  }
+});
+
+adminRouter.put("/reviews/:reviewId", async (req, res) => {
+  try {
+    const { reviewId } = req.params;
+    const { rating, review } = req.body;
+
+    const updatedReview = await Review.findByIdAndUpdate(
+      reviewId,
+      { rating, review },
+      { new: true } // Return the updated document
     );
 
-    if (!existingReview) {
-      return res.status(404).json({ message: "Review not found" });
+    if (!updatedReview) {
+      return res.status(404).json({ message: "Review not found." });
     }
 
-    // Update the review
-    existingReview.rating = rating;
-    existingReview.review = review;
-
-    // Update overall book rating
-    book.rating =
-      book.reviews.reduce((sum, r) => sum + r.rating, 0) / book.reviews.length;
-
-    await book.save();
-
-    res.status(200).json({
-      message: "Review updated successfully",
-      review: existingReview,
-    });
-  } catch (error) {
-    console.error("Error updating review:", error);
-    res.status(500).json({ message: "Server Error", error: error.message });
+    res.status(200).json(updatedReview);
+  } catch (err) {
+    res.status(500).json({ message: "Error updating review.", error: err.message });
   }
 });
 
-
-adminRouter.get("/userreviews", verifyToken, async (req, res) => {
-  const userId = req.userId;
-
+adminRouter.delete("/reviews/:reviewId", async (req, res) => {
   try {
-    const reviews = await Review.find({ user: userId }).populate({
-      path: "user",
-      select: "fullName emailAddress", // Include relevant user details
-    });
+    const { reviewId } = req.params;
+    const deletedReview = await Review.findByIdAndDelete(reviewId);
 
-    if (reviews.length === 0) {
-      return res.status(404).json({ message: "No reviews found for this user" });
+    if (!deletedReview) {
+      return res.status(404).json({ message: "Review not found." });
     }
 
-    res.status(200).json({ reviews });
-  } catch (error) {
-    console.error("Error fetching user reviews:", error);
-    res.status(500).json({ message: "Server Error", error: error.message });
+    res.status(200).json({ message: "Review deleted successfully.", reviewId });
+  } catch (err) {
+    res.status(500).json({ message: "Error deleting review.", error: err.message });
   }
 });
-
-
-
-adminRouter.delete("/deletereview/:bookId/:reviewId",verifyToken,async (req, res) => {
-  
-    const { bookId, reviewId } = req.params;
-    const userId = req.userId;
-
-    try {
-      const book = await Books.findById(bookId);
-      if (!book) {
-        return res.status(404).json({ message: "Book not found" });
-      }
-
-      const review = book.reviews.find((r) => r._id.toString() === reviewId);
-      if (!review) {
-        return res.status(404).json({ message: "Review not found" });
-      }
-
-      if (
-        review.user.toString() !== userId.toString() &&
-        req.userType !== "ADMIN"
-      ) {
-        return res
-          .status(403)
-          .json({ message: "Unauthorized to delete this review" });
-      }
-
-      // Remove review from book
-      book.reviews = book.reviews.filter((r) => r._id.toString() !== reviewId);
-
-      // Update book rating
-      book.numReviews = book.reviews.length;
-      book.rating =
-        book.reviews.length > 0
-          ? book.reviews.reduce((sum, r) => sum + r.rating, 0) /
-            book.reviews.length
-          : 0;
-
-      await book.save();
-
-      // Delete review from Review collection
-      await Review.findByIdAndDelete(reviewId);
-
-      res.status(200).json({ message: "Review deleted successfully" });
-    } catch (error) {
-      console.error("Error deleting review:", error);
-      res.status(500).json({ message: "Server Error", error: error.message });
-    }
-  }
-);
-
-
-
 
 
 adminRouter.get("/logout", (req, res) => {
-  res.clearCookie("authToken");
+
+  res.clearCookie("bookToken");
   res.status(200).json({ message: "Logout successful" });
+  
 });
 
 export { adminRouter, User }; // Export the router

@@ -2,12 +2,17 @@ import React, { useState, useEffect } from "react";
 import Navebar from "../component/Navebar";
 import { useParams, useNavigate, Link } from "react-router-dom";
 
+
 const Onebook = () => {
   const { id } = useParams(); // Fetch book ID from URL
   const [book, setBook] = useState(null); // Book details
   const [reviews, setReviews] = useState([]); // List of reviews
   const [newReview, setNewReview] = useState({ rating: "", review: "" }); // Review form data
+
+
+  const [error, setError] = useState(""); // Error message for review submission
   const navigate = useNavigate();
+
 
   // Fetch book details and reviews
   useEffect(() => {
@@ -22,11 +27,15 @@ const Onebook = () => {
         setBook(bookData);
 
         // Fetch reviews for the book
-        const reviewsResponse = await fetch(`http://127.0.0.1:3000/reviews/${id}`);
+        const reviewsResponse = await fetch(
+          `http://127.0.0.1:3000/reviews/${id}`
+        );
         if (!reviewsResponse.ok) {
           throw new Error("Failed to fetch reviews");
         }
         const reviewsData = await reviewsResponse.json();
+        console.log(reviewsData);
+
         setReviews(reviewsData);
       } catch (error) {
         console.error("Error loading data:", error);
@@ -36,41 +45,11 @@ const Onebook = () => {
     fetchBookData();
   }, [id]);
 
-  // Handle review form input changes
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setNewReview({ ...newReview, [name]: value });
-  };
-
-  // Submit a new review
-  const submitReview = async (e) => {
-    e.preventDefault();
-
-    try {
-      const response = await fetch(`http://127.0.0.1:3000/reviews/${id}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newReview),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to submit review");
-      }
-
-      const addedReview = await response.json();
-      setReviews([...reviews, addedReview]); // Update the reviews list with the new review
-      setNewReview({ rating: "", review: "" }); // Clear the form
-    } catch (error) {
-      console.error("Error submitting review:", error);
-    }
-  };
-
   const handleDelete = async () => {
     try {
       const response = await fetch(`http://127.0.0.1:3000/deletebook/${id}`, {
         method: "DELETE",
+        credentials: "include",
       });
 
       if (!response.ok) {
@@ -82,6 +61,87 @@ const Onebook = () => {
       console.error("Error deleting book:", error);
     }
   };
+
+
+  // Handle review form input changes
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewReview({ ...newReview, [name]: value });
+  };
+
+  // Submit a new review
+  const submitReview = async (e) => {
+    e.preventDefault();
+    setError(""); // Clear any existing error
+
+    try {
+      const response = await fetch(`http://127.0.0.1:3000/reviews/${id}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newReview),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to submit review");
+      }
+
+      const addedReview = await response.json();
+      setReviews([...reviews, addedReview]); // Update the reviews list with the new review
+      setNewReview({ rating: "", review: "" }); // Clear the form
+    } catch (error) {
+      setError(error.message);
+    }
+  };
+
+  const updateReview = async (reviewId, updatedData) => {
+    try {
+      const response = await fetch(`http://127.0.0.1:3000/reviews/${reviewId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedData),
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to update review");
+      }
+  
+      const updatedReview = await response.json();
+      
+      // Update the review in the state
+      setReviews((prevReviews) =>
+        prevReviews.map((review) =>
+          review._id === reviewId ? { ...review, ...updatedData } : review
+        )
+      );
+      alert("Review updated successfully!");
+    } catch (error) {
+      console.error("Error updating review:", error);
+      alert(`Failed to update review: ${error.message}`);
+    }
+  };
+  
+
+
+  const deleteReview = async (reviewId) => {
+    try {
+      const response = await fetch(`http://127.0.0.1:3000/reviews/${reviewId}`, {
+        method: "DELETE",
+      });
+  
+      if (!response.ok) {
+        throw new Error("Failed to delete review");
+      }
+  
+      setReviews(reviews.filter((review) => review._id !== reviewId)); // Remove the review from state
+    } catch (error) {
+      console.error("Error deleting review:", error);
+    }
+  };
+  
 
   return (
     <>
@@ -100,11 +160,12 @@ const Onebook = () => {
                 <p>Author: {book.author}</p>
                 <p>Genre: {book.genre}</p>
                 <p>Published Date: {book.publishedDate}</p>
+                <p>Description: {book.description}</p>
+
               </div>
             </div>
-            <p>Description: {book.description}</p>
-
-            <button className="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 focus:outline-none">
+            <div className="">
+            <button className="bg-blue-500 t mt-4 text-white p-2 rounded-md hover:bg-blue-600 focus:outline-none">
               <Link to={`/update-book/${book._id}`}>Update</Link>
             </button>
             <button
@@ -113,6 +174,7 @@ const Onebook = () => {
             >
               Delete
             </button>
+            </div>
           </>
         ) : (
           <p>Loading...</p>
@@ -154,6 +216,8 @@ const Onebook = () => {
               ></textarea>
             </div>
 
+            {error && <p className="text-red-500">{error}</p>}
+
             <button
               type="submit"
               className="bg-green-500 text-white p-2 rounded-md hover:bg-green-600 focus:outline-none"
@@ -167,13 +231,44 @@ const Onebook = () => {
         <div className="mt-10">
           <h2 className="text-lg font-bold mb-4">Reviews</h2>
           {reviews.length > 0 ? (
-            reviews.map((review, index) => (
+            reviews.map((review) => (
               <div
-                key={index}
-                className="p-4 border-b border-gray-200 last:border-none"
+                key={review._id}
+                className=" flex justify-between items-center p-4 border-b border-gray-200 last:border-none"
               >
-                <p className="text-sm text-gray-600">Rating: {review.rating} ⭐</p>
+                <p className="text-sm text-gray-600">
+                  Rating: {review.rating} ⭐
+                </p>
                 <p className="mt-2">{review.review}</p>
+                <div className="mt-4 space-x-2">
+                  <button
+                    onClick={() => {
+                      const newRating = prompt(
+                        "Enter new rating (1-5):",
+                        review.rating
+                      );
+                      const newReview = prompt(
+                        "Enter new review:",
+                        review.review
+                      );
+                      if (newRating && newReview) {
+                        updateReview(review._id, {
+                          rating: newRating,
+                          review: newReview,
+                        });
+                      }
+                    }}
+                    className="bg-blue-500  text-white p-1 rounded-md hover:bg-blue-600 focus:outline-none"
+                  >
+                    Update
+                  </button>
+                  <button
+                    onClick={() => deleteReview(review._id)}
+                    className="bg-red-500 text-white p-1 rounded-md hover:bg-red-600 focus:outline-none"
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
             ))
           ) : (

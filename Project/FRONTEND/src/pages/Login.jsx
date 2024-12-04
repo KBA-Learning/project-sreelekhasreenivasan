@@ -17,10 +17,15 @@ const Login = () => {
             
             },
             body: JSON.stringify(userDetails),
-            credentials: 'include',
+            credentials: "include",
         });
 
         if(res.ok){
+          
+            const data = await res.json();
+            
+            localStorage.setItem('userType', data.userType);
+
             navigate('/view-book');
         } else{
             alert('Please check the input data');

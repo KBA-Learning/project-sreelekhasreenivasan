@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link,useNavigate } from 'react-router-dom';
 import Navebar from '../component/Navebar';
 
 const Viewbook = () => {
+
   const genres = [
     { name: 'Fantasy', image: '/Images/17fatbooks-articleLarge.webp' },
     { name: 'Fiction', image: '/Images/17fatbooks-articleLarge.webp' },
@@ -14,8 +15,29 @@ const Viewbook = () => {
 
   const [books, setBooks] = useState([]);
   const [error, setError] = useState(null);
-  const [searchTerm, setSearchTerm] = useState(''); // State for search term
   const [loading, setLoading] = useState(false); // Loading state
+  const [searchQuery, setSearchQuery] = useState(""); // Single input for title or author
+  const navigate = useNavigate(); 
+
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    if (!searchQuery.trim()) {
+      alert("Please enter a search query.");
+      return;
+    }
+    try {
+      await fetch('http://127.0.0.1:3000/books/search', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ query: searchQuery }),
+      });
+    } catch (error) {
+      console.error('Error fetching books:', error);
+    }
+  };
+  
 
   // Fetch all books
   useEffect(() => {
@@ -57,13 +79,14 @@ const Viewbook = () => {
     }
   };
 
-  // Filter books by search term
-  const filteredBooks = books.filter(
-    (book) =>
-      book.bookName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      book.author.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      book.genre.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+// Filter books by search term
+const filteredBooks = books.filter(
+  (book) =>
+    book.bookName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    book.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    book.genre.toLowerCase().includes(searchQuery.toLowerCase())
+);
+
 
   return (
     <>
@@ -98,15 +121,17 @@ const Viewbook = () => {
 
       <section className="bg-gray-100 p-4">
         <div className="container mx-auto">
+          <form onSubmit={handleSearch}>
           <div className="flex justify-center mb-6">
             <input
               type="text"
-              placeholder="Search by Title, Author, Genre, or Published Date..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Search by Title/ Author..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               className="p-3 w-full max-w-2xl border border-gray-300 rounded-md shadow-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
             />
           </div>
+          </form>
         </div>
       </section>
 

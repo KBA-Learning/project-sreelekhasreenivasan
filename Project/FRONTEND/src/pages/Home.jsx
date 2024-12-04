@@ -43,12 +43,13 @@ const Home = () => {
   }, []);
 
   const handleViewClick = (bookId) => {
+    
     if (!isLoggedIn) {
       alert('Please log in to view the book details');
       navigate('/login')
       
     } else {
-      navigate = (`/one-book/${bookId}`); 
+      navigate (`/one-book/${bookId}`); 
     }
   };
 

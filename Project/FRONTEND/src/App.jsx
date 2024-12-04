@@ -9,7 +9,6 @@ import Onebook from "./pages/Onebook";
 import Updatebook from "./pages/Updatebook";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
-import Search from './pages/Search'
 
 const App = () => {
   return (
@@ -23,7 +22,6 @@ const App = () => {
         <Route path='/add-book' element={<Addbook/>}/>
         <Route path='/update-book/:id' element={<Updatebook/>}/>
         <Route path='/one-book/:id' element={<Onebook/>}/>
-        <Route path='/search-book/' element={<Search/>}/>
         <Route path='/signup' element={<Signup/>}/>
 
 
