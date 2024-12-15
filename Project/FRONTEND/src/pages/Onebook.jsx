@@ -2,23 +2,18 @@ import React, { useState, useEffect } from "react";
 import Navebar from "../component/Navebar";
 import { useParams, useNavigate, Link } from "react-router-dom";
 
-
 const Onebook = () => {
-  const { id } = useParams(); // Fetch book ID from URL
-  const [book, setBook] = useState(null); // Book details
-  const [reviews, setReviews] = useState([]); // List of reviews
-  const [newReview, setNewReview] = useState({ rating: "", review: "" }); // Review form data
-
-
-  const [error, setError] = useState(""); // Error message for review submission
+  const { id } = useParams(); 
+  const [book, setBook] = useState(null);
+  const [reviews, setReviews] = useState([]); 
+  const [newReview, setNewReview] = useState({ rating: "", review: "" });
+  const [error, setError] = useState(""); 
   const navigate = useNavigate();
 
 
-  // Fetch book details and reviews
   useEffect(() => {
     const fetchBookData = async () => {
       try {
-        // Fetch book details
         const bookResponse = await fetch(`http://127.0.0.1:3000/book/${id}`);
         if (!bookResponse.ok) {
           throw new Error("Failed to fetch book details");
@@ -26,7 +21,6 @@ const Onebook = () => {
         const bookData = await bookResponse.json();
         setBook(bookData);
 
-        // Fetch reviews for the book
         const reviewsResponse = await fetch(
           `http://127.0.0.1:3000/reviews/${id}`
         );
@@ -62,17 +56,14 @@ const Onebook = () => {
     }
   };
 
-
-  // Handle review form input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewReview({ ...newReview, [name]: value });
   };
 
-  // Submit a new review
   const submitReview = async (e) => {
     e.preventDefault();
-    setError(""); // Clear any existing error
+    setError(""); 
 
     try {
       const response = await fetch(`http://127.0.0.1:3000/reviews/${id}`, {
@@ -89,8 +80,8 @@ const Onebook = () => {
       }
 
       const addedReview = await response.json();
-      setReviews([...reviews, addedReview]); // Update the reviews list with the new review
-      setNewReview({ rating: "", review: "" }); // Clear the form
+      setReviews([...reviews, addedReview]); 
+      setNewReview({ rating: "", review: "" }); 
     } catch (error) {
       setError(error.message);
     }
@@ -98,20 +89,22 @@ const Onebook = () => {
 
   const updateReview = async (reviewId, updatedData) => {
     try {
-      const response = await fetch(`http://127.0.0.1:3000/reviews/${reviewId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedData),
-      });
-  
+      const response = await fetch(
+        `http://127.0.0.1:3000/reviews/${reviewId}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(updatedData),
+        }
+      );
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || "Failed to update review");
       }
-  
+
       const updatedReview = await response.json();
-      
-      // Update the review in the state
+
       setReviews((prevReviews) =>
         prevReviews.map((review) =>
           review._id === reviewId ? { ...review, ...updatedData } : review
@@ -123,25 +116,27 @@ const Onebook = () => {
       alert(`Failed to update review: ${error.message}`);
     }
   };
-  
-
 
   const deleteReview = async (reviewId) => {
     try {
-      const response = await fetch(`http://127.0.0.1:3000/reviews/${reviewId}`, {
-        method: "DELETE",
-      });
-  
+      const response = await fetch(
+        `http://127.0.0.1:3000/reviews/${reviewId}`,
+        {
+          method: "DELETE",
+        }
+      );
+
       if (!response.ok) {
         throw new Error("Failed to delete review");
       }
-  
-      setReviews(reviews.filter((review) => review._id !== reviewId)); // Remove the review from state
+
+      setReviews(reviews.filter((review) => review._id !== reviewId)); 
     } catch (error) {
       console.error("Error deleting review:", error);
     }
   };
-  
+
+  const userType = localStorage.getItem("userType");
 
   return (
     <>
@@ -161,26 +156,28 @@ const Onebook = () => {
                 <p>Genre: {book.genre}</p>
                 <p>Published Date: {book.publishedDate}</p>
                 <p>Description: {book.description}</p>
-
               </div>
             </div>
-            <div className="">
-            <button className="bg-blue-500 t mt-4 text-white p-2 rounded-md hover:bg-blue-600 focus:outline-none">
-              <Link to={`/update-book/${book._id}`}>Update</Link>
-            </button>
-            <button
-              onClick={handleDelete}
-              className="bg-red-500 text-white p-2 rounded-md ml-4 hover:bg-red-600 focus:outline-none"
-            >
-              Delete
-            </button>
+            <div>
+              {userType === "ADMIN" && (
+                <button className="bg-blue-500 t mt-4 text-white p-2 rounded-md hover:bg-blue-600 focus:outline-none">
+                  <Link to={`/update-book/${book._id}`}>Update</Link>
+                </button>
+              )}
+              {userType === "ADMIN" && (
+                <button
+                  onClick={handleDelete}
+                  className="bg-red-500 text-white p-2 rounded-md ml-4 hover:bg-red-600 focus:outline-none"
+                >
+                  Delete
+                </button>
+              )}
             </div>
           </>
         ) : (
           <p>Loading...</p>
         )}
 
-        {/* Add Review Section */}
         <div className="mt-10 p-4 bg-gray-100 rounded-md">
           <h2 className="text-lg font-bold mb-4">Add Your Review</h2>
           <form onSubmit={submitReview}>
@@ -227,7 +224,6 @@ const Onebook = () => {
           </form>
         </div>
 
-        {/* Display Reviews Section */}
         <div className="mt-10">
           <h2 className="text-lg font-bold mb-4">Reviews</h2>
           {reviews.length > 0 ? (
@@ -258,16 +254,19 @@ const Onebook = () => {
                         });
                       }
                     }}
-                    className="bg-blue-500  text-white p-1 rounded-md hover:bg-blue-600 focus:outline-none"
+                    className=" text-orange-500 p-1 rounded-md hover:undetline focus:outline-none"
                   >
-                    Update
+                    Edit my review
                   </button>
+                  {userType === "ADMIN" && (
+
                   <button
                     onClick={() => deleteReview(review._id)}
                     className="bg-red-500 text-white p-1 rounded-md hover:bg-red-600 focus:outline-none"
                   >
                     Delete
                   </button>
+                  )}
                 </div>
               </div>
             ))

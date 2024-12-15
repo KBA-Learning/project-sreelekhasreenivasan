@@ -20,10 +20,10 @@ app.use(cors(
 app.use(cookieParser());
 
 
-const port = process.env.PORT;
+const port = process.env.port;
 
 
-mongoose.connect('mongodb://mongodb:27017/Get_Your_Book');
+mongoose.connect('mongodb://localhost:27017/Get_Your_Book');
 
 app.use('/',adminRouter);
 

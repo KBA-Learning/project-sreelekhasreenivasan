@@ -34,7 +34,7 @@ const storage = multer.diskStorage({
 const upload = multer({
   storage: storage,
   limits: {
-    fileSize: 10 * 1024 * 1024, // Set the file size limit to 10MB (adjust as needed)
+    fileSize: 10 * 1024 * 1024,
   },
 });
 
@@ -50,7 +50,6 @@ const reviewSchema = new mongoose.Schema({
   rating: { type: Number, required: true, min: 1, max: 5 },
   review: { type: String, required: true },
   bookId: { type: mongoose.Schema.Types.ObjectId, ref: "Book", required: true },
-  // userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
 });
 
 const bookSchema = new mongoose.Schema({
@@ -136,7 +135,6 @@ adminRouter.post("/signup", async (req, res) => {
 adminRouter.post("/login", async (req, res) => {
   try {
     const { Emailaddress, Password } = req.body;
-    // console.log(Password);
 
     if (!Emailaddress || !Password) {
       return res.status(400).json({
@@ -147,7 +145,6 @@ adminRouter.post("/login", async (req, res) => {
     }
 
     const user = await User.findOne({ emailAddress: Emailaddress });
-    // console.log(user);
 
     if (!user) {
       return res.status(400).json({
@@ -169,7 +166,7 @@ adminRouter.post("/login", async (req, res) => {
 
         const token = jwt.sign({ userId: user._id, userType: user.role  },process.env.SECRET_KEY, { expiresIn: '7h' });
         
-        // console.log(token);
+        console.log(token);
 
         res.cookie('bookToken', token, { httpOnly: true });
         res.status(200).json({ message: 'Success',  userType: user.role })
@@ -179,6 +176,7 @@ adminRouter.post("/login", async (req, res) => {
     });
   }
 });
+
 
 
 adminRouter.get('/viewuser',authenticate, async(req,res)=>{
@@ -458,4 +456,4 @@ adminRouter.get("/logout", (req, res) => {
   
 });
 
-export { adminRouter, User }; // Export the router
+export { adminRouter, User };

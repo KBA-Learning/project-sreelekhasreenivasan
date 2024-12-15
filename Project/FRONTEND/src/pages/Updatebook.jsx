@@ -15,6 +15,19 @@ const Updatebook = () => {
   });
 
   const navigate = useNavigate();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+
+  useEffect(() => {
+    const userType = localStorage.getItem('userType');
+
+    if (userType === 'ADMIN') {
+      setIsAdmin(true);
+    } else {
+      alert('Access Denied: Only admins can update books.');
+      navigate('/'); 
+    }
+  }, [navigate]);
 
   useEffect(() => {
     const fetchBookDetails = async () => {
@@ -45,6 +58,10 @@ const Updatebook = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!isAdmin) {
+      alert('You do not have permission to perform this action.');
+      return;
+    }
     try {
       const response = await fetch(`http://127.0.0.1:3000/updatebook/${id}`, {
         method: "PUT",
@@ -61,7 +78,7 @@ const Updatebook = () => {
       const updatedBook = await response.json();
       console.log(updatedBook);
 
-      navigate('/view-book'); // Redirect to the book view page after updating
+      navigate('/view-book'); 
 
     } catch (error) {
       console.error("Error updating book:", error);

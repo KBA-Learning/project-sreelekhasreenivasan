@@ -12,7 +12,6 @@ const AddBook = () => {
   const navigate = useNavigate();
   const [isAdmin, setIsAdmin] = useState(false);
 
-  // Check user role on component mount
   useEffect(() => {
     const userType = localStorage.getItem('userType');
 
@@ -20,7 +19,7 @@ const AddBook = () => {
       setIsAdmin(true);
     } else {
       alert('Access Denied: Only admins can add books.');
-      navigate('/'); // Redirect non-admin users to the homepage or another page
+      navigate('/'); 
     }
   }, [navigate]);
 
@@ -43,7 +42,7 @@ const AddBook = () => {
     try {
       const res = await fetch('http://127.0.0.1:3000/addbook', {
         method: 'POST',
-        credentials: 'include', // Include cookies for authentication
+        credentials: 'include', 
         body: formData,
       });
 

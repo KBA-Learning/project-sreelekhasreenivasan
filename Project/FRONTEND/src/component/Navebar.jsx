@@ -18,20 +18,25 @@ const Navebar = () => {
     navigate('/login');
   };
 
+  const userType = localStorage.getItem("userType");
+
   return (
     <>
       <nav className="flex justify-between items-center text-red-600 bg-slate-300 px-6 py-4">
         <div className='flex'>
-          <img src={logo} alt="Get Your Book" className="h-14 w-14" /><span className='pt-4 text-green-600 font-bold text-xl'>Get Your Book</span>
+          <img src={logo} alt="Get Your Book" className="h-14 w-14" />
+          <span className='pt-4 text-green-600 font-bold text-xl'>Get Your Book</span>
         </div>
 
         <ul className="flex gap-6 items-center">
           <li className="hover:text-indigo-500">
             <Link to={'/view-book'}>Library</Link>
           </li>
-          <li className="hover:text-indigo-500">
-            <Link to={'/add-book'}>Add Book</Link>
-          </li>
+          {userType === 'ADMIN' && (
+            <li className="hover:text-indigo-500">
+              <Link to={'/add-book'}>Add Book</Link>
+            </li>
+          )}
           <li>
             <button
               onClick={handleLogout}

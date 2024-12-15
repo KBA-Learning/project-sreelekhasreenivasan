@@ -1,38 +1,34 @@
 import jwt from "jsonwebtoken";
-import dotenv from "dotenv";
-import cookie from "cookie"; // Library for parsing cookies
 
-dotenv.config();
 
-const authenticate = (req, res, next) => {
-  const cookiesHeader = req.headers.cookie;
 
-  // Check if cookies are present
-  if (!cookiesHeader) {
-    return res.status(401).json({ message: "Unauthorized: No cookies found" });
-  }
+const secretKey='your-secret-key';
+const authenticate=(req,res,next)=>{ 
+    const cookies= req.headers.cookie;
+    // req.cookies
+    // console.log(cookies);
+    
+    const cookieArray = cookies.split(';');
 
-  try {
-    // Parse cookies using the 'cookie' library
-    const cookies = cookie.parse(cookiesHeader);
+    console.log(cookieArray);
+    
+    for (let cookie of cookieArray) {
+        const [name, token] = cookie.trim().split('=');
 
-    // Check if the specific cookie exists
-    if (!cookies.bookToken) {
-      return res.status(401).json({ message: "Unauthorized: Token not found" });
+        // If 'AuthToken' cookie is found, verify the JWT
+        if (name === 'bookToken') {
+            try {
+                const verified = jwt.verify(token, secretKey);
+                req.userId = verified.userId;
+                req.userType = verified.userType;
+            } catch (err) {
+                return res.status(403).json({ error: "Forbidden: Invalid token" });
+            }
+            break;
+        }
     }
-
-    // Verify the token
-    const verified = jwt.verify(cookies.bookToken, process.env.SECRET_KEY);
-
-    // Attach user data to the request object
-    req.userId = verified.userId;
-    req.userType = verified.userType;
-
-    next(); // Proceed to the next middleware
-  } catch (error) {
-    console.error("Authentication error:", error);
-    return res.status(401).json({ message: "Unauthorized: Invalid token" });
-  }
-};
-
-export { authenticate };
+    // console.log(verified);
+    
+    next();
+}
+export {authenticate};
